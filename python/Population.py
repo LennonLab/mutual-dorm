@@ -31,7 +31,7 @@ class Population():
 
         # 2 internal cell processes
 
-        m = 1
+        m = 1 # about of resource to uptake
 
 
         order = np.random.choice(range(self.N), size=self.N) # randomize order of cells
@@ -106,7 +106,7 @@ class Population():
         """
 
         types = [cell.type for cell in self.dormant]
-        
+
         return types.count(ty)
 
     def trait_mean(self, ty = None) -> float:
