@@ -10,11 +10,12 @@ class Population():
     cells (list) - list of Cell() objects
     N (int, default=100) - population size 
     """
-    def __init__(self, cells:list, resources:dict, N:int=100) -> None:
+    def __init__(self, cells:list, resources:dict, N:int=100, responsive:bool=False) -> None:
         # try
         self.update(cells)
         self.dormant = list()
-        self.resources = resources  
+        self.resources = resources 
+        self.responsive = responsive
 
     def timestep(self) -> None:
         """
@@ -76,8 +77,8 @@ class Population():
         next_gen = list(cells) + daughters
         
         # 4 dormancy
-        # dorm = self.dorm()
-        # self.dormant += dorm # add cells to dormancy list
+        dorm = self.dorm()
+        self.dormant += dorm # add cells to dormancy list
         self.update(next_gen)
         
 
@@ -98,6 +99,15 @@ class Population():
         Returns frequency of given allele (ty) in pop   
         """
         return self.types.count(ty)
+    
+    def density_d(self, ty) -> int():
+        """
+        Returns frequency of given allele (ty) in dormant pop   
+        """
+
+        types = [cell.type for cell in self.dormant]
+        
+        return types.count(ty)
 
     def trait_mean(self, ty = None) -> float:
         """
@@ -145,13 +155,13 @@ class Population():
         daughter = deepcopy(cell)
         return daughter
     
-    def dorm(self, responsive:bool=False) -> list:
+    def dorm(self) -> list:
         """ 
         Select cells to enter dormancy
         """
         cells = self.cells
         
-        if responsive:
+        if self.responsive:
             # pD = np.array([ cell.d for cell in cells ]) # array of dormancy probabilities
             pD = np.array([ cell.d for cell in cells ]) # array of dormancy probabilities
             rng = np.random.uniform(size = self.N) # cell becomes dormant if random num is smaller than pD
