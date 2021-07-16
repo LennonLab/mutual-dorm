@@ -41,7 +41,7 @@ mt = arguments.mt
 g = arguments.growth
 size = arguments.size
 
-params = {}
+params = {'N':N, 'A':A, 'B':B, 'C':C, 'responsive':responsive, 'trait':trait, 'R':R, 'mt':mt, 'g':g, 'size':size}
 
 
 ### initialize simulation ###
@@ -91,8 +91,8 @@ def init_containers(**kwargs):
     containers = [pop, freqA, mean_trait, trait_a, trait_b, D, Na, Nb, r_a, r_b, r_c, R, Ra, Rb]
     return containers
 
-def sim(t_max:int=t, **kwargs):
-    pop, freqA, mean_trait, trait_a, trait_b, D, Na, Nb, r_a, r_b, r_c, R, Ra, Rb = init_containers(**kwargs)
+def sim(containers):
+    pop, freqA, mean_trait, trait_a, trait_b, D, Na, Nb, r_a, r_b, r_c, R, Ra, Rb = containers
 
     for t in range(t_max):
 
@@ -113,9 +113,20 @@ def sim(t_max:int=t, **kwargs):
         r_a.append(pop.resources['A'])
         r_b.append(pop.resources['B'])
         r_c.append(pop.resources['C'])
+
+    return [pop, freqA, mean_trait, trait_a, trait_b, D, Na, Nb, r_a, r_b, r_c, R, Ra, Rb]
+
+
+def multisims(sims:int=sims, params:dict=params):
+
+    map_containers = [init_containers(**params) for i in range(sims)]
+
+    pool = mp.Pool(mp.cpu_count())
+
+    results = pool.map(sim, map_containers, chunksize=1)
+
     return None
 
-t_max = 1000
 
 
 
