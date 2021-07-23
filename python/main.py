@@ -1,8 +1,10 @@
 import argparse
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 from Cell import Cell
 from Population import Population
+import plots
 from copy import deepcopy
 import multiprocessing as mp
 
@@ -11,12 +13,13 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-o','--output', default='.', type=str, help="Desired name of output path")
 parser.add_argument('-S','--sims', default=10, type=int, help="Number of simulations to run (--single must be False)")
 parser.add_argument('-t','--timesteps', default=100, type=int, help="Number of timesteps in each simulation")
-parser.add_argument('-S','--stoch', dest='resp', action='store_false', help='Stochastic dormancy mode')
+parser.add_argument('-st','--stoch', dest='resp', action='store_false', help='Stochastic dormancy mode')
 parser.add_argument('-R','--react', dest='resp', action='store_true', help='Reactive dormancy mode')
+parser.add_argument('-nd', dest='dorm', action='store_false', help='Deactivates dormancy')
 parser.add_argument('-a', default=0, type=float, help="Starting density of resource A")
 parser.add_argument('-b', default=0, type=float, help="Starting density of resource B")
 parser.add_argument('-c', default=100, type=float, help="Starting density of resource C")
-parser.add_argument('-n', default=0, type=int, help="Starting total cell density")
+parser.add_argument('-n', default=100, type=int, help="Starting total cell density")
 parser.add_argument('-tr','--trait', default=None, type=float, help="Mutualistic trait value")
 parser.add_argument('-r','--resources', default=None, type=float, help="Initial internal cell resource concentration")
 parser.add_argument('-mt', default=None, type=float, help="Maintenance cost per timestep")
@@ -24,29 +27,31 @@ parser.add_argument('-g', '--growth',default=None, type=float, help="Growth per 
 parser.add_argument('-sz', '--size',default=None, type=float, help="Initial cell size")
 
 
-parser.set_defaults(stoch=True)
+parser.set_defaults(resp=True)
+parser.set_defaults(dorn=True)
 
 arguments = parser.parse_args()
 out = arguments.output
 sims = arguments.sims
 t_max = arguments.timesteps
 responsive = arguments.resp
+dorm = arguments.dorm
 A = arguments.a
 B = arguments.b
 C = arguments.c 
-N = arguments.N
+N = arguments.n
 trait = arguments.trait
 R = arguments.resources
 mt = arguments.mt
 g = arguments.growth
 size = arguments.size
 
-params = {'N':N, 'A':A, 'B':B, 'C':C, 'responsive':responsive, 'trait':trait, 'R':R, 'mt':mt, 'g':g, 'size':size}
+params = {'N':N, 'A':A, 'B':B, 'C':C, 'responsive':responsive, 'dorm':dorm,'trait':trait, 'R':R, 'mt':mt, 'g':g, 'size':size}
 
 
 ### initialize simulation ###
 
-def init_pop(N:int=N, A:float=A, B:float=B, C:float=C, responsive:bool=responsive, trait:float=trait, R:float=R, mt:float=mt, g:float=g, size:float=size, **kwargs):
+def init_pop(N:int=N, A:float=A, B:float=B, C:float=C, responsive:bool=responsive, dorm:bool=dorm,trait:float=trait, R:float=R, mt:float=mt, g:float=g, size:float=size, **kwargs):
     """
     Returns a pop with the specified features
     """
@@ -125,17 +130,41 @@ def multisims(sims:int=sims, params:dict=params):
 
     results = pool.map(sim, map_containers, chunksize=1)
 
+    freqs = [result[1][-1] for result in results] # list of the last freq of each sim
+    traits = [result[2][-1] for result in results] 
+    metabolites = [result[8][-1]+result[9][-1] for result in results] 
+    Rs = [result[11][-1] for result in results] 
+    Ns = [result[6][-1]+result[6][-1] for result in results] 
+
+    plots.freq_m(out+'frequencies.png',freqs)
+    plots.trait_m(out+'traits.png', traits)
+    plots.meta_m(out+'metabolites.png', metabolites)
+    plots.R_m(out+'resources.png', Rs)
+    plots.N_m(out+'densities.png', Ns)
+
+    df = pd.DataFrame(
+        {
+            'freqs': freqs,
+            'traits': traits,
+            'metabolites': metabolites,
+            'resources': Rs,
+            'density': Ns
+        }
+    )
+
+    df.to_csv(out+'summary.csv')
+
     return None
 
+### execute ###
+if __name__ == "__main__":
+    
+    if sims > 1: # if we are running more than one simulation
+        multisims(sims=sims, params=params)
 
+        for param, val in params.items():
 
-
-### simulate ###
-
-
-
-
-### plot ###
-
-
-# densities over time
+            print("%s:\t%s" % (param, val))
+    
+    else:
+        pass

@@ -10,12 +10,13 @@ class Population():
     cells (list) - list of Cell() objects
     N (int, default=100) - population size 
     """
-    def __init__(self, cells:list, resources:dict, N:int=100, responsive:bool=False) -> None:
+    def __init__(self, cells:list, resources:dict, N:int=100, responsive:bool=False, dorm:bool=True) -> None:
         # try
         self.update(cells)
         self.dormant = list()
         self.resources = resources 
         self.responsive = responsive
+        self.hasdorm = dorm
 
     def timestep(self) -> None:
         """
@@ -160,8 +161,11 @@ class Population():
         Select cells to enter dormancy
         """
         cells = self.cells
-        
-        if self.responsive:
+
+        if not self.hasdorm:
+            dormant = []
+    
+        elif self.responsive:
             # pD = np.array([ cell.d for cell in cells ]) # array of dormancy probabilities
             pD = np.array([ cell.d for cell in cells ]) # array of dormancy probabilities
             rng = np.random.uniform(size = self.N) # cell becomes dormant if random num is smaller than pD
@@ -183,6 +187,9 @@ class Population():
         """
         Pick cells to resuscitate from dormancy
         """
+        if not self.hasdorm:
+            return []
+            
         pR = 0.01 # per cell prob of resuscitating
         D = len(self.dormant) # number of dormant cells
         R = np.random.binomial( n=D, p=pR )
