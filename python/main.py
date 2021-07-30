@@ -16,6 +16,8 @@ parser.add_argument('-t','--timesteps', default=100, type=int, help="Number of t
 parser.add_argument('-st','--stoch', dest='resp', action='store_false', help='Stochastic dormancy mode')
 parser.add_argument('-R','--react', dest='resp', action='store_true', help='Reactive dormancy mode')
 parser.add_argument('-nd', dest='dorm', action='store_false', help='Deactivates dormancy')
+parser.add_argument('-es', '--estoch', dest='estoch', action='store_true', help='enables environmental stochasticity')
+parser.add_argument('-C','--cells', default=2, type=int, help='number of cell types (1 or 2)')
 parser.add_argument('-a', default=0, type=float, help="Starting density of resource A")
 parser.add_argument('-b', default=0, type=float, help="Starting density of resource B")
 parser.add_argument('-c', default=100, type=float, help="Starting density of resource C")
@@ -28,7 +30,8 @@ parser.add_argument('-sz', '--size',default=None, type=float, help="Initial cell
 
 
 parser.set_defaults(resp=True)
-parser.set_defaults(dorn=True)
+parser.set_defaults(dorm=True)
+parser.set_defaults(estoch=False)
 
 arguments = parser.parse_args()
 out = arguments.output
@@ -36,6 +39,8 @@ sims = arguments.sims
 t_max = arguments.timesteps
 responsive = arguments.resp
 dorm = arguments.dorm
+env_stoch = arguments.estoch
+num_cells = arguments.cells
 A = arguments.a
 B = arguments.b
 C = arguments.c 
@@ -46,16 +51,23 @@ mt = arguments.mt
 g = arguments.growth
 size = arguments.size
 
-params = {'N':N, 'A':A, 'B':B, 'C':C, 'responsive':responsive, 'dorm':dorm,'trait':trait, 'R':R, 'mt':mt, 'g':g, 'size':size}
+assert num_cells in {1,2}, "Number of cells should be 1 or 2"
+
+params = {'num_cells':num_cells, 'N':N, 'A':A, 'B':B, 'C':C, 'responsive':responsive, 'dorm':dorm,'trait':trait, 'R':R, 'mt':mt, 'g':g, 'size':size}
 
 
 ### initialize simulation ###
 
-def init_pop(N:int=N, A:float=A, B:float=B, C:float=C, responsive:bool=responsive, dorm:bool=dorm,trait:float=trait, R:float=R, mt:float=mt, g:float=g, size:float=size, **kwargs):
+def init_pop(num_cells:int=2, N:int=N, A:float=A, B:float=B, C:float=C, responsive:bool=responsive, dorm:bool=dorm,trait:float=trait, R:float=R, mt:float=mt, g:float=g, size:float=size, **kwargs):
     """
     Returns a pop with the specified features
     """
-    
+    cell_type = None
+
+    if num_cells==1:
+
+        cell_type = 'A'
+
     R_i = {
         'A': A,
         'B': B,
@@ -63,6 +75,7 @@ def init_pop(N:int=N, A:float=A, B:float=B, C:float=C, responsive:bool=responsiv
     }
 
     cell_args = {
+        'ty': cell_type,
         'trait': trait,
         'R': R,
         'mt': mt,
@@ -76,7 +89,7 @@ def init_pop(N:int=N, A:float=A, B:float=B, C:float=C, responsive:bool=responsiv
 
 ### trackers ###
 
-def init_containers(**kwargs):
+def init_containers(env_stoch, **kwargs):
     pop = init_pop(**kwargs)
 
     freqA = [pop.freq('A')]
@@ -93,16 +106,22 @@ def init_containers(**kwargs):
     Ra = [pop.R('A')]
     Rb = [pop.R('B')]
 
-    containers = [pop, freqA, mean_trait, trait_a, trait_b, D, Na, Nb, r_a, r_b, r_c, R, Ra, Rb]
+    containers = [pop, freqA, mean_trait, trait_a, trait_b, D, Na, Nb, r_a, r_b, r_c, R, Ra, Rb, env_stoch]
     return containers
 
 def sim(containers):
-    pop, freqA, mean_trait, trait_a, trait_b, D, Na, Nb, r_a, r_b, r_c, R, Ra, Rb = containers
+    pop, freqA, mean_trait, trait_a, trait_b, D, Na, Nb, r_a, r_b, r_c, R, Ra, Rb, env_stoch = containers
+
+    if env_stoch:
+        C_flow = [50, 100]
+    
+    else: 
+        C_flow = [100]
 
     for t in range(t_max):
 
         pop.timestep()
-        pop.resources['C'] += 100
+        pop.resources['C'] += np.random.choice(C_flow)
 
         R.append(pop.R())
         Ra.append(pop.R('A'))
@@ -122,9 +141,9 @@ def sim(containers):
     return [pop, freqA, mean_trait, trait_a, trait_b, D, Na, Nb, r_a, r_b, r_c, R, Ra, Rb]
 
 
-def multisims(sims:int=sims, params:dict=params):
+def multisims(sims:int=sims, params:dict=params, env_stoch:bool=env_stoch):
 
-    map_containers = [init_containers(**params) for i in range(sims)]
+    map_containers = [init_containers(env_stoch,**params) for i in range(sims)]
 
     pool = mp.Pool(mp.cpu_count())
 
@@ -162,9 +181,12 @@ if __name__ == "__main__":
     if sims > 1: # if we are running more than one simulation
         multisims(sims=sims, params=params)
 
+        print('Environmental Stochasticity:\t%s' % env_stoch)
+
         for param, val in params.items():
 
             print("%s:\t%s" % (param, val))
+                
     
     else:
         pass
