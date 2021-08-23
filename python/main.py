@@ -28,11 +28,12 @@ parser.add_argument('-mt', default=None, type=float, help="Maintenance cost per 
 parser.add_argument('-g', '--growth',default=None, type=float, help="Growth per timestep")
 parser.add_argument('-sz', '--size',default=None, type=float, help="Initial cell size")
 
-
+# set defaults for boolean arguments
 parser.set_defaults(resp=True)
 parser.set_defaults(dorm=True)
 parser.set_defaults(estoch=False)
 
+# Read in command line arguments
 arguments = parser.parse_args()
 out = arguments.output
 sims = arguments.sims
@@ -53,6 +54,7 @@ size = arguments.size
 
 assert num_cells in {1,2}, "Number of cells should be 1 or 2"
 
+# create dictionary of parameters
 params = {'num_cells':num_cells, 'N':N, 'A':A, 'B':B, 'C':C, 'responsive':responsive, 'dorm':dorm,'trait':trait, 'R':R, 'mt':mt, 'g':g, 'size':size}
 
 
@@ -109,20 +111,22 @@ def init_containers(env_stoch, **kwargs):
     containers = [pop, freqA, mean_trait, trait_a, trait_b, D, Na, Nb, r_a, r_b, r_c, R, Ra, Rb, env_stoch]
     return containers
 
+# runs a single simulation
 def sim(containers):
     pop, freqA, mean_trait, trait_a, trait_b, D, Na, Nb, r_a, r_b, r_c, R, Ra, Rb, env_stoch = containers
 
-    if env_stoch:
+    if env_stoch: # environmental stochasticity mode
         C_flow = [50, 100]
     
     else: 
         C_flow = [100]
 
-    for t in range(t_max):
+    for t in range(t_max): # for each timestep
 
         pop.timestep()
         pop.resources['C'] += np.random.choice(C_flow)
 
+        # store values 
         R.append(pop.R())
         Ra.append(pop.R('A'))
         Rb.append(pop.R('B'))
@@ -140,27 +144,30 @@ def sim(containers):
 
     return [pop, freqA, mean_trait, trait_a, trait_b, D, Na, Nb, r_a, r_b, r_c, R, Ra, Rb]
 
-
+# run multiple simulations
 def multisims(sims:int=sims, params:dict=params, env_stoch:bool=env_stoch):
 
-    map_containers = [init_containers(env_stoch,**params) for i in range(sims)]
+    map_containers = [init_containers(env_stoch,**params) for i in range(sims)] # initialized simulations
 
-    pool = mp.Pool(mp.cpu_count())
+    pool = mp.Pool(mp.cpu_count()) # parallel setup
 
-    results = pool.map(sim, map_containers, chunksize=1)
-
+    results = pool.map(sim, map_containers, chunksize=1) # run simes
+    
+    # store results
     freqs = [result[1][-1] for result in results] # list of the last freq of each sim
     traits = [result[2][-1] for result in results] 
     metabolites = [result[8][-1]+result[9][-1] for result in results] 
     Rs = [result[11][-1] for result in results] 
-    Ns = [result[6][-1]+result[6][-1] for result in results] 
+    Ns = [result[6][-1]+result[7][-1] for result in results] 
 
+    # plot output
     plots.freq_m(out+'frequencies.png',freqs)
     plots.trait_m(out+'traits.png', traits)
     plots.meta_m(out+'metabolites.png', metabolites)
     plots.R_m(out+'resources.png', Rs)
     plots.N_m(out+'densities.png', Ns)
 
+    # save .csv
     df = pd.DataFrame(
         {
             'freqs': freqs,
