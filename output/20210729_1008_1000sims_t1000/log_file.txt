@@ -1,0 +1,12 @@
+num_cells:	1
+N:	100
+A:	0
+B:	0
+C:	100
+responsive:	True
+dorm:	False
+trait:	0.0
+R:	None
+mt:	None
+g:	None
+size:	None
