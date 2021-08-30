@@ -8,7 +8,10 @@ class Population():
     Population - collection of cells
     --------------------------------
     cells (list) - list of Cell() objects
+    resources (dict) - dict of resource name to resource concentration
     N (int, default=100) - population size 
+    responsive (bool) - responsive dormancy (True) vs stochastic (False). Overidden by dorm.
+    dorm (bool) - does simulation have dormancy. Overides responsive
     """
     def __init__(self, cells:list, resources:dict, N:int=100, responsive:bool=False, dorm:bool=True) -> None:
         # try
@@ -130,7 +133,8 @@ class Population():
         return mu
     
     def R(self, ty:str=None) -> float:
-        """  
+        """ 
+        Mean R for entire population or a specified cell type 
         """
         R = 0
 
@@ -207,21 +211,3 @@ class Population():
         self.cells = cells
         self.N = len(cells)
         return None
-
-    # def weights(self, cells, resources) -> np.array:
-    #     """ 
-    #     Return probabilities that each cell is selected for the next timestep
-    #     """
-    #     W = [ cell.fitness(resources) for cell in cells ] # absolute fitness for all
-
-    #     sumW = np.sum(W)
-
-    #     if sumW == 0:
-    #         return None
-
-    #     weights = W/np.sum(W) # relative fitness, kinda
-        
-    #     if np.isnan(np.sum(weights)):
-    #         weights = None
-
-    #     return weights

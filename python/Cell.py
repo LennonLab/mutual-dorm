@@ -13,6 +13,8 @@ class Cell():
         ty (str): type or allele of cell (Default: None)
         trait (float): primary trait value (Default: None)
         R (float): endogenous resources
+        mt (float): maintainence cost
+        g (float): growth constant
         size (float): cell size
         """
         assert ty in ['A', 'B', None], "ty should be A or B"
@@ -70,21 +72,35 @@ class Cell():
         return None
     
     def depleted(self) -> None:
+        """  
+        Checks if the cell has any remaining resources
+        """
         self.isDepleted = self.R <= 0
-        # if self.R <= 0: print('empty')
         return None
 
     def maintenance(self) -> None:
+        """  
+        Reduces R by the minimum of R or the maintenance cost
+        """
         self.R -= min(self.R, self.mt)
         return None
     
     def growth(self) -> None:
+        """  
+        Increases cell size and decreases internal resources by 
+        the minimum of growth constant and R
+        """
         g = min(self.g, self.R)
         self.R -= g
         self.size += g
         return None
     
     def division(self) -> None:
+        """  
+        Calculates probability of cell division (p) according to 
+        R and cell size and uses RNG and binomial dist. to determine
+        division status
+        """
         if self.R > 0:
             
             p = self.R/(1+self.R) * self.size/(1+self.size) # probability of cell division
@@ -95,7 +111,10 @@ class Cell():
         return None
 
     def divide(self) -> None:
-
+        """  
+        Decreases size and R by 2
+        Resets division status
+        """
         self.size /= 2
         self.R /= 2
         self.isDividing = False 
@@ -103,7 +122,9 @@ class Cell():
         return None
         
     def produce(self) -> float:
-        # s = self.trait*self.R
+        """
+        The amount of metabolite to produce
+        """
         s = self.trait
         return max(s, 0)
     
@@ -131,56 +152,3 @@ class Cell():
 
         return None
     
-    # def production(self, resources:dict):
-    #     """  
-    #     Amount of secondary resource this cell produces
-    #     """
-
-    #     return self.trait * self.fitness(resources)
-
-    # def supplement(self) -> None:
-    #     """  
-    #     Required resources for the cell
-    #     Current version is basic
-    #     """
-    #     self.sup = set()
-
-    #     if self.type=='A':
-    #         self.sup.add('R_a')
-
-    #     elif self.type=='B':
-    #         self.sup.add('R_b')
-
-    #     return None
-    
-    # def fitness(self, resources:dict) -> float:
-    #     """
-    #     Absolute fitness W of cell based on available resources
-    #     """
-    #     req = self.req
-
-    #     # initialize
-    #     W = 0 
-    #     W_req = 0 # required
-    #     W_sup = 0 # supplemental
-
-    #     for resource, R in resources.items(): # for all  resources
-
-    #         if resource in req:  # if required
-    #             W_req *= R/(50 + R)
-        
-    #         elif True: # if supplemental
-
-    #             W_sup *= R/(50 + R)
-
-
-    #     if W_req==0: 
-            
-    #         W = 0 # if no required resources, can't grow 
-        
-    #     else:
-    #          W = W_req + W_sup
-
-    #     return W
-
-        
