@@ -48,7 +48,7 @@ Like the non-spatial model described above, cells of type A and B are generated 
 
 #### XML Script
 
-CompuCell3D uses an XML script (`MutualDorm.xml`) to establish the base parameters of the simulation. Various plugins are coded into this file to establish constraints and behaviors, including defining cell types and declaring which cells will initialized and where. The background medium is declared as its own cell type, and it will be initialized as a single cell. Resouces are also declared, including the speed of their diffusion, and strength of chemotaxis. Here, A cells have chemotaxis towards $R_B$ and $R_C$, while B cells have chemotaxis towards $R_A$ and $R_C$. The medium is set to secrete a constant value of $R_C$ every timestep, and as cells grow and use up space in the medium, 
+CompuCell3D uses an XML script (`MutualDorm.xml`) to establish the base parameters of the simulation. Various plugins are coded into this file to establish constraints and behaviors, including defining cell types and declaring which cells will initialized and where. The background medium is declared as its own cell type, and it will be initialized as a single cell. The dimensions of the 2D plane of the simulation are defined here, and the boundaries of this plane are defined as "periodic", meaning that the top of the plane is connected to the bottom, as are the left and right, as opposed to boundaries with solid edges. Resources are also declared, including the speed of their diffusion, and strength of chemotaxis. Here, A cells have chemotaxis towards $R_B$ and $R_C$, while B cells have chemotaxis towards $R_A$ and $R_C$. The medium is set to secrete a constant value of $R_C$ every timestep, and as cells grow and move into pixels previously occupied by the medium, those pixels no longer secrete $R_C$.
 
 Importantly, this script contains information about the contact energies, which essentially define preferences in boundary contact. The low contact energy of cells with the medium relative to cells with other cells means that cells have a slight preference to being in contact compared to other cells. The magnitude of these energies relative to the temperature parameter determine the extent of the preferences. 
 
@@ -68,22 +68,26 @@ Ran model with dormancy on, off, stochastic, responsive, with mutualism on and o
 
 ### Spatial Model
 
-CompuPresently, the spatial model is configured to run only for certain parameters.
+Initially, A and B cells are placed in the middle of the simulation plane within a certain radius surrounded by medium, which actively secretes $R_C$. Once the simulation begins, the functions defined in the steppable classes are executed at each timestep for all cells, causing cells to uptake resources, grow, become dormant, and resuscitate. As cells grow and divide, they cover an increasing portion of the simulation plane until they cover the entire plane (Fig. 3). 
 
-Initially, A and B cells are placed in the middle of the simulation plane within a certain radius surrounded by medium, which actively secretes $R_C$. Once the simulation begins, 
+Once the cells cover the medium across the whole simulation plane and temporary dynamics subside, the medium can no longer secrete $R_C$. However, as A and B cells have been secreting $R_A$ and $R_B$, respectively, both cell types have available resources.
 
-![cell field gif](CompuCell3D/screenshots/MutualDorm_cc3d_08_30_2021_17_26_37/cellfield.gif)
+<!-- ![cell field gif](CompuCell3D/screenshots/MutualDorm_cc3d_08_30_2021_17_26_37/cellfield.gif) -->
 
 *CompuCell3D animation of the spatial model showing dynamics over 1000 timesteps of A (blue) and B (green) cells, as well as dormant A (red) and B (yellow) cells, on a 2-dimensional plane. Black edges are present to distinguish between cells.*
 
-![cell densities plot](CompuCell3D/screenshots/MutualDorm_cc3d_08_30_2021_17_26_37/celldensities.png)
+Let the densities of A and B cells be $N_A$ and $N_B$. These population densities oscillate over time between $1000$ and $2000$ individuals such that the densities of both cell types are out of phase. When $N_A$ increases, $N_B$ in turn decreases, and the reciprocal also is true. This same pattern is apparent with the dormant populations of A and B ($D_A$ and $D_B$), though the dormant populations are much higher, generally oscillating between $3000$ and $4000$ individuals. 
+
+<!-- ![cell densities plot](CompuCell3D/screenshots/MutualDorm_cc3d_08_30_2021_17_26_37/celldensities.png) -->
 
 *Densities of all cell types of the animated simulation above. The colors of the curves match the colors of the cells.*
 
 ## Future Directions
 
+### Non-spatial model
+
 Work out bugs with non-spatial IBM
 
-Parameter scans for spatial model for proper behavior
+To see what the effect of dormancy is in this spatial contextParameter scans for spatial model for proper behavior
 
 
