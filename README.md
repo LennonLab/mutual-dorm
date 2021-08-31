@@ -68,7 +68,11 @@ Ran model with dormancy on, off, stochastic, responsive, with mutualism on and o
 
 ### Spatial Model
 
-Presently, the spatial model is configured to run only for certain parameters. 
+CompuPresently, the spatial model is configured to run only for certain parameters.
+
+![cell field gif](CompuCell3D/screenshots/MutualDorm_cc3d_08_30_2021_17_26_37/cellfield.gif)
+
+![cell densities plot](CompuCell3D/screenshots/MutualDorm_cc3d_08_30_2021_17_26_37/celldensities.png)
 
 ## Future Directions
 
