@@ -70,9 +70,15 @@ Ran model with dormancy on, off, stochastic, responsive, with mutualism on and o
 
 CompuPresently, the spatial model is configured to run only for certain parameters.
 
+Initially, A and B cells are placed in the middle of the simulation plane within a certain radius surrounded by medium, which actively secretes $R_C$. Once the simulation begins, 
+
 ![cell field gif](CompuCell3D/screenshots/MutualDorm_cc3d_08_30_2021_17_26_37/cellfield.gif)
 
+*CompuCell3D animation of the spatial model showing dynamics over 1000 timesteps of A (blue) and B (green) cells, as well as dormant A (red) and B (yellow) cells, on a 2-dimensional plane. Black edges are present to distinguish between cells.*
+
 ![cell densities plot](CompuCell3D/screenshots/MutualDorm_cc3d_08_30_2021_17_26_37/celldensities.png)
+
+*Densities of all cell types of the animated simulation above. The colors of the curves match the colors of the cells.*
 
 ## Future Directions
 
