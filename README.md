@@ -44,7 +44,7 @@ The primary simulation action occurs in `main.py`. This script reads in paramete
 
 The spatial model was construced using the CompuCell3D platform, which has been previously used in biomedical research for explicitely modeling the complex behaviors of human body tissues. This platform allows 2D or 3D modeling of cells made up of several pixels that can grow, divide, interact with each other, and perform many biologically relevant behaviors. 
 
-Like the non-spatial model described above, cells of type A and B are generated with certain properties, including volume, resource concentration, and also coordinate locations in a 2D environment. Cells of type A produce $R_A$, and cells of type B 
+Like the non-spatial model described above, cells of type A and B are generated with certain properties, including volume, resource concentration, and also coordinate locations in a 2D environment. Cells of type A produce $R_A$, and cells of type B produce $R_B$, as in the non-spatial model. 
 
 #### XML Script
 
@@ -64,7 +64,22 @@ Responsive dormancy is implemented in this model in a similar manner to the non-
 
 ### Non-Spatial Model
 
-Ran model with dormancy on, off, stochastic, responsive, with mutualism on and off
+Each simulation was initialized with 100 total cells randomly set to be A or B cells. Simulations were run varying the strength of mutualism, as well as the mode of dormancy (stochastic, responsive, or no dormancy). The simulations were ran for 1000 timesteps each. 
+
+![densities plot](output/MD_plots/fig1.png)
+
+*Fig.1: Densities of A and B cells for the duration of a single simulation.*
+
+![densities plot](output/MD_plots/fig2.png)
+
+*Fig.2: Densities of A and B cells for the duration of a single simulation without a cost of mutualism.*
+
+![densities plot](output/MD_plots/fig3.png)
+
+*Fig.3: Evolution of the average mutualistic trait value of a simulation where A becomes dominant.*
+
+Dormancy appears to have little effect on simulation outcome. However, this may be because there is insufficent environmental stochasticity in the program. While there is a setting in the model to allow for fluctuations in $R_C$ at any given timestep, perhaps more drastic fluctuations are necessary to see an effect. 
+
 
 ### Spatial Model
 
@@ -72,13 +87,13 @@ Initially, A and B cells are placed in the middle of the simulation plane within
 
 Once the cells cover the medium across the whole simulation plane and temporary dynamics subside, the medium can no longer secrete $R_C$. However, as A and B cells have been secreting $R_A$ and $R_B$, respectively, both cell types have available resources. However, resources are only readily available to cells that are in contact with cells of the opposite type, or those which inhabit spaces formerly occupied by those cells.
 
-<!-- ![cell field gif](CompuCell3D/screenshots/MutualDorm_cc3d_08_30_2021_17_26_37/cellfield.gif) -->
+![cell field gif](CompuCell3D/screenshots/MutualDorm_cc3d_08_30_2021_17_26_37/cellfield.gif)
 
 *CompuCell3D animation of the spatial model showing dynamics over 1000 timesteps of A (blue) and B (green) cells, as well as dormant A (red) and B (yellow) cells, on a 2-dimensional plane. Black edges are present to distinguish between cells.*
 
 Let the densities of A and B cells be $N_A$ and $N_B$. These population densities oscillate over time between $1000$ and $2000$ individuals such that the densities of both cell types are out of phase. When $N_A$ increases, $N_B$ in turn decreases, and the reciprocal also is true. This same pattern is apparent with the dormant populations of A and B ($D_A$ and $D_B$), though the dormant populations are much higher, generally oscillating between $3000$ and $4000$ individuals. 
 
-<!-- ![cell densities plot](CompuCell3D/screenshots/MutualDorm_cc3d_08_30_2021_17_26_37/celldensities.png) -->
+![cell densities plot](CompuCell3D/screenshots/MutualDorm_cc3d_08_30_2021_17_26_37/celldensities.png)
 
 *Densities of all cell types of the animated simulation above. The colors of the curves match the colors of the cells.*
 
@@ -90,6 +105,6 @@ In its present form, this non-spatial model contains several unanticipated behav
 
 ### Spatial model
 
-There are several steps to be taken that will ensure the spatial model is behaving properly.  
+While the base CompuCell3D model is in place, the spatial model requires much tweaking and modification to produce desired behavior, including changing the initial location of cell, the decision function for cell division, the size of dormant cells relative to active cells, the cost of producing metabolites, the strength of chemotaxis, and the rate of production of $R_C$ by the medium. Additionally, this model does not yet include a cost for metabolite secretion, which would likely change the behavior of the model based on the magnitude of the cost. The groundwork laid out in this repository for this model will assist these endeavors, in addition to providing a template for using CompuCell3D to study microbial interactions. 
 
 
