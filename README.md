@@ -64,19 +64,36 @@ Responsive dormancy is implemented in this model in a similar manner to the non-
 
 ### Non-Spatial Model
 
-Each simulation was initialized with 100 total cells randomly set to be A or B cells. Simulations were run varying the strength of mutualism, as well as the mode of dormancy (stochastic, responsive, or no dormancy). The simulations were ran for 1000 timesteps each. 
+Each simulation was initialized with 100 total cells randomly set to be A or B cells. 100 units of $R_C$ are added each timestep. Simulations were run varying the strength of mutualism, as well as the mode of dormancy (stochastic, responsive, or no dormancy). The simulations were ran for 1000 timesteps each. 
+
+Regardless of dormancy mode, when cells are initialized with mutualism enabled, both cell types stably coexist the majority of the time (Fig.1, 3). The combined densities of the two cell types grows agter an initial reaches a saturation point most often below 1000 total cells. Despite this, the concencentrations of $R_A$ and $R_B$ remain approximately 100-fold less than $R_C$. This small mutualistic interaction does appear enough to stabilize the pair such that the likelihood of fixation is greatly decreased. 
 
 ![densities plot](output/MD_plots/fig1.png)
 
-*Fig.1: Densities of A and B cells for the duration of a single simulation.*
+*Fig.1: Densities of A and B cells for the duration of a single simulation with mutualism and responsive dormancy enabled.*
 
-![densities plot](output/MD_plots/fig2.png)
+![densities histogram](output/MD_plots/fig2.png)
 
-*Fig.2: Densities of A and B cells for the duration of a single simulation without a cost of mutualism.*
+*Fig.2: Total densities of A and B cells at the final timestep for 1000 simulations. Mutualism is enabled (trait=0.1), and dormancy is disabled.*
 
-![densities plot](output/MD_plots/fig3.png)
+![freq histogram](output/MD_plots/fig3.png)
 
-*Fig.3: Evolution of the average mutualistic trait value of a simulation where A becomes dominant.*
+*Fig.3: Frequency of A cells at the final timestep for 1000 simulations. Mutualism is enabled (trait=0.1), and dormancy is disabled.*
+
+Within a simulation, the mutualistic trait can be allowed to evolve. This is achieved by initializing population with variation in this trait value. Consistently, the average trait value of these populations was approximately $0.5$ and steadily decreased over the course the simulation (Fig.4). As no cells are initialized with a trait value of exactly $0$, the average trait value must remain nonzero. The primary reason for the decrease in the individual-level cost of maintaining mutualism, as producing $R_A$ or $R_B$ uses up resources that could otherwise be converted into cell growth and lead to progeny. 
+
+![trait plot](output/MD_plots/fig4.png)
+
+*Fig.4: Evolution of the average mutualistic trait value of a simulation where A becomes dominant.*
+
+The cost of mutualism is the limiting factor in the total population density. When mutualism is disabled, final total population density can reach much higher levels (Fig.5). A similar result occurs when mutualism is enabled but with no associated cost (Fig.6).
+
+![densities histogram 2](output/MD_plots/fig5.png)
+*Fig.5: Total densities of A and B cells at the final timestep for 1000 simulations where both mutualism and dormancy are turned off.*
+
+![densities plot 2](output/MD_plots/fig6.png)
+
+*Fig.6: Densities of A and B cells for the duration of a single simulation without a cost of mutualism.*
 
 Dormancy appears to have little effect on simulation outcome. However, this may be because there is insufficent environmental stochasticity in the program. While there is a setting in the model to allow for fluctuations in $R_C$ at any given timestep, perhaps more drastic fluctuations are necessary to see an effect. 
 
@@ -89,19 +106,19 @@ Once the cells cover the medium across the whole simulation plane and temporary 
 
 ![cell field gif](CompuCell3D/screenshots/MutualDorm_cc3d_08_30_2021_17_26_37/cellfield.gif)
 
-*CompuCell3D animation of the spatial model showing dynamics over 1000 timesteps of A (blue) and B (green) cells, as well as dormant A (red) and B (yellow) cells, on a 2-dimensional plane. Black edges are present to distinguish between cells.*
+*Fig.7: CompuCell3D animation of the spatial model showing dynamics over 1000 timesteps of A (blue) and B (green) cells, as well as dormant A (red) and B (yellow) cells, on a 2-dimensional plane. Black edges are present to distinguish between cells.*
 
 Let the densities of A and B cells be $N_A$ and $N_B$. These population densities oscillate over time between $1000$ and $2000$ individuals such that the densities of both cell types are out of phase. When $N_A$ increases, $N_B$ in turn decreases, and the reciprocal also is true. This same pattern is apparent with the dormant populations of A and B ($D_A$ and $D_B$), though the dormant populations are much higher, generally oscillating between $3000$ and $4000$ individuals. 
 
 ![cell densities plot](CompuCell3D/screenshots/MutualDorm_cc3d_08_30_2021_17_26_37/celldensities.png)
 
-*Densities of all cell types of the animated simulation above. The colors of the curves match the colors of the cells.*
+*Fig.8: Densities of all cell types of the animated simulation above. The colors of the curves match the colors of the cells.*
 
 ## Future Directions
 
 ### Non-spatial model
 
-In its present form, this non-spatial model contains several unanticipated behaviors. Work out bugs with non-spatial IBM
+In its present form, this non-spatial model contains several unanticipated behaviors. Namely, dormancy should have some effect on the model's behavior. While environmental stochasticity is implemented, it does not change simulation dynamics in an appreciable manner. More testing will be necessary to incorporate this vital feature of the model. Additionally, parameter tuning will be necessary to find a reasonable cost of mutualism to find realistic values that allow for stable mutualisms to form. Discovering if dormancy can alter how feasible mutualism is with varying costs will be essential moving forward. 
 
 ### Spatial model
 
