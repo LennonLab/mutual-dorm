@@ -85,7 +85,7 @@ def init_pop(num_cells:int=2, N:int=N, A:float=A, B:float=B, C:float=C, responsi
         'size': size
     }
 
-    pop = Population([ Cell(**cell_args) for i in range(N) ], R_i, responsive=responsive)
+    pop = Population([ Cell(**cell_args) for i in range(N) ], R_i, responsive=responsive, dorm=dorm)
 
     return pop
 
