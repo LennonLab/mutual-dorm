@@ -5,7 +5,7 @@ source activate ibm
 # parameters
 sims=1000
 t=1000
-tr=0
+tr=0.1
 C=1
 
 # setup output directory
@@ -24,5 +24,5 @@ mkdir $output
 touch $log
 
 # run sim
-time python $python/main.py -S $sims -t $t -o $output/ -nd -C $C > $log
+time python $python/main.py -S $sims -t $t -o $output/ -R -tr $tr -C $C > $log
 
