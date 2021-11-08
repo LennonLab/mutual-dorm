@@ -27,6 +27,7 @@ parser.add_argument('-r','--resources', default=None, type=float, help="Initial 
 parser.add_argument('-mt', default=None, type=float, help="Maintenance cost per timestep")
 parser.add_argument('-g', '--growth',default=None, type=float, help="Growth per timestep")
 parser.add_argument('-sz', '--size',default=None, type=float, help="Initial cell size")
+parser.add_argument('-des','--description', default='', type=str, help="Short description of the the run that will go into the logfile.")
 
 # set defaults for boolean arguments
 parser.set_defaults(resp=True)
@@ -51,6 +52,7 @@ R = arguments.resources
 mt = arguments.mt
 g = arguments.growth
 size = arguments.size
+description = arguments.description
 
 assert num_cells in {1,2}, "Number of cells should be 1 or 2"
 
@@ -107,16 +109,18 @@ def init_containers(env_stoch, **kwargs):
     R = [pop.R()]
     Ra = [pop.R('A')]
     Rb = [pop.R('B')]
+    mean_Na = [pop.density('A')]
+    mean_Nb = [pop.density('B')]
 
-    containers = [pop, freqA, mean_trait, trait_a, trait_b, D, Na, Nb, r_a, r_b, r_c, R, Ra, Rb, env_stoch]
+    containers = [pop, freqA, mean_trait, trait_a, trait_b, D, Na, Nb, r_a, r_b, r_c, R, Ra, Rb, env_stoch, mean_Na, mean_Nb]
     return containers
 
 # runs a single simulation
 def sim(containers):
-    pop, freqA, mean_trait, trait_a, trait_b, D, Na, Nb, r_a, r_b, r_c, R, Ra, Rb, env_stoch = containers
+    pop, freqA, mean_trait, trait_a, trait_b, D, Na, Nb, r_a, r_b, r_c, R, Ra, Rb, env_stoch, mean_Na, mean_Nb = containers
 
     if env_stoch: # environmental stochasticity mode
-        C_flow = [50, 100]
+        C_flow = [0, 0, 0, 0, 100]
     
     else: 
         C_flow = [100]
@@ -141,8 +145,10 @@ def sim(containers):
         r_a.append(pop.resources['A'])
         r_b.append(pop.resources['B'])
         r_c.append(pop.resources['C'])
+        mean_Na.append(np.mean(Na))
+        mean_Nb.append(np.mean(Nb))
 
-    return [pop, freqA, mean_trait, trait_a, trait_b, D, Na, Nb, r_a, r_b, r_c, R, Ra, Rb]
+    return [pop, freqA, mean_trait, trait_a, trait_b, D, Na, Nb, r_a, r_b, r_c, R, Ra, Rb, mean_Na, mean_Nb]
 
 # run multiple simulations
 def multisims(sims:int=sims, params:dict=params, env_stoch:bool=env_stoch):
@@ -158,7 +164,8 @@ def multisims(sims:int=sims, params:dict=params, env_stoch:bool=env_stoch):
     traits = [result[2][-1] for result in results] 
     metabolites = [result[8][-1]+result[9][-1] for result in results] 
     Rs = [result[11][-1] for result in results] 
-    Ns = [result[6][-1]+result[7][-1] for result in results] 
+    Ns = [result[6][-1]+result[7][-1] for result in results]
+    mean_Ns = [result[-1][-1]+result[-2][-1] for result in results]
 
     # plot output
     plots.freq_m(out+'frequencies.png',freqs)
@@ -166,6 +173,7 @@ def multisims(sims:int=sims, params:dict=params, env_stoch:bool=env_stoch):
     plots.meta_m(out+'metabolites.png', metabolites)
     plots.R_m(out+'resources.png', Rs)
     plots.N_m(out+'densities.png', Ns)
+    plots.mean_N_m(out+'mean_densities',mean_Ns)
 
     # save .csv
     df = pd.DataFrame(
@@ -184,6 +192,8 @@ def multisims(sims:int=sims, params:dict=params, env_stoch:bool=env_stoch):
 
 ### execute ###
 if __name__ == "__main__":
+
+    print("Description\n%s" % description)
     
     if sims > 1: # if we are running more than one simulation
         multisims(sims=sims, params=params)
