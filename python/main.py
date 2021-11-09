@@ -120,7 +120,7 @@ def sim(containers):
     pop, freqA, mean_trait, trait_a, trait_b, D, Na, Nb, r_a, r_b, r_c, R, Ra, Rb, env_stoch, mean_Na, mean_Nb = containers
 
     if env_stoch: # environmental stochasticity mode
-        C_flow = [0, 0, 0, 0, 100]
+        C_flow = [0 for i in range(15)] + [100]
     
     else: 
         C_flow = [100]
@@ -182,7 +182,8 @@ def multisims(sims:int=sims, params:dict=params, env_stoch:bool=env_stoch):
             'traits': traits,
             'metabolites': metabolites,
             'resources': Rs,
-            'density': Ns
+            'density': Ns,
+            "mean_density": mean_Ns
         }
     )
 
@@ -193,7 +194,7 @@ def multisims(sims:int=sims, params:dict=params, env_stoch:bool=env_stoch):
 ### execute ###
 if __name__ == "__main__":
 
-    print("Description\n%s" % description)
+    print("Description:\n%s\n" % description)
     
     if sims > 1: # if we are running more than one simulation
         multisims(sims=sims, params=params)

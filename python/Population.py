@@ -68,6 +68,10 @@ class Population():
 
                     cell.R += m
                     self.resources[r] -= m
+            
+            if self.responsive: # update dormancy probabilities
+
+                cell.dorm()
 
             cell.depleted()
                   
@@ -85,13 +89,18 @@ class Population():
 
             isDividing = np.array([cell.isDividing for cell in cells])
             daughters = [self.daughterCell(cell) for cell in cells[isDividing]]
+
+            next_gen = list(cells) + daughters
+            self.update(next_gen)
       
             # 4 dormancy
             dorm = self.dorm()
             self.dormant += dorm # add cells to dormancy list
         
-        next_gen = list(cells) + daughters
-        self.update(next_gen)
+        else: # if there are no active cells
+        
+            next_gen = list(cells) + daughters
+            self.update(next_gen)
 
         for resource, R in self.resources.items():
             if R <= 0:
@@ -172,7 +181,7 @@ class Population():
         Select cells to enter dormancy
         """
         cells = self.cells
-
+        
         if not self.hasdorm:
             dormant = []
     
@@ -191,6 +200,8 @@ class Population():
 
         for cell in dormant: # remove dormant cells from active population
             self.cells.remove(cell)
+        
+        self.update(self.cells)
 
         return list(dormant)
     
