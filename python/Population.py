@@ -199,9 +199,9 @@ class Population():
             dormant = np.random.choice(cells, size=D, replace=False) # pick which cells go dormant
 
         for cell in dormant: # remove dormant cells from active population
-            self.cells.remove(cell)
+            cells.remove(cell)
         
-        self.update(self.cells)
+        self.update(cells)
 
         return list(dormant)
     

@@ -111,13 +111,15 @@ def init_containers(env_stoch, **kwargs):
     Rb = [pop.R('B')]
     mean_Na = [pop.density('A')]
     mean_Nb = [pop.density('B')]
+    Da = [pop.density_d('A')]
+    Db = [pop.density_d('B')]
 
-    containers = [pop, freqA, mean_trait, trait_a, trait_b, D, Na, Nb, r_a, r_b, r_c, R, Ra, Rb, env_stoch, mean_Na, mean_Nb]
+    containers = [pop, freqA, mean_trait, trait_a, trait_b, D, Na, Nb, r_a, r_b, r_c, R, Ra, Rb, env_stoch, mean_Na, mean_Nb, Da, Db]
     return containers
 
 # runs a single simulation
 def sim(containers):
-    pop, freqA, mean_trait, trait_a, trait_b, D, Na, Nb, r_a, r_b, r_c, R, Ra, Rb, env_stoch, mean_Na, mean_Nb = containers
+    pop, freqA, mean_trait, trait_a, trait_b, D, Na, Nb, r_a, r_b, r_c, R, Ra, Rb, env_stoch, mean_Na, mean_Nb, Da, Db = containers
 
     if env_stoch: # environmental stochasticity mode
         C_flow = [0 for i in range(15)] + [100]
@@ -147,8 +149,10 @@ def sim(containers):
         r_c.append(pop.resources['C'])
         mean_Na.append(np.mean(Na))
         mean_Nb.append(np.mean(Nb))
+        Da.append(pop.density_d('A'))
+        Db.append(pop.density_d('B'))
 
-    return [pop, freqA, mean_trait, trait_a, trait_b, D, Na, Nb, r_a, r_b, r_c, R, Ra, Rb, mean_Na, mean_Nb]
+    return [pop, freqA, mean_trait, trait_a, trait_b, D, Na, Nb, r_a, r_b, r_c, R, Ra, Rb, mean_Na, mean_Nb, Da, Db]
 
 # run multiple simulations
 def multisims(sims:int=sims, params:dict=params, env_stoch:bool=env_stoch):
@@ -157,7 +161,7 @@ def multisims(sims:int=sims, params:dict=params, env_stoch:bool=env_stoch):
 
     pool = mp.Pool(mp.cpu_count()) # parallel setup
 
-    results = pool.map(sim, map_containers, chunksize=1) # run simes
+    results = pool.map(sim, map_containers, chunksize=1) # run sims
     
     # store results
     freqs = [result[1][-1] for result in results] # list of the last freq of each sim
@@ -165,7 +169,9 @@ def multisims(sims:int=sims, params:dict=params, env_stoch:bool=env_stoch):
     metabolites = [result[8][-1]+result[9][-1] for result in results] 
     Rs = [result[11][-1] for result in results] 
     Ns = [result[6][-1]+result[7][-1] for result in results]
-    mean_Ns = [result[-1][-1]+result[-2][-1] for result in results]
+    mean_Ns = [result[14][-1]+result[15][-1] for result in results]
+    coexist = np.array([0 if ((result[6][-1]+result[16][-1])==0 or (result[7][-1]+result[17][-1])==0) else 1 for result in results]) # are the cell types coexisting?
+    extinct = np.array([1 if N==0 else 0 for N in Ns ])
 
     # plot output
     plots.freq_m(out+'frequencies.png',freqs)
@@ -175,6 +181,12 @@ def multisims(sims:int=sims, params:dict=params, env_stoch:bool=env_stoch):
     plots.N_m(out+'densities.png', Ns)
     plots.mean_N_m(out+'mean_densities',mean_Ns)
 
+    # print output
+    print()
+    print("Proportion Coexisting: %s" % np.mean(coexist))
+    print("Proportion Extinct: %s" % np.mean(extinct))
+    print()
+
     # save .csv
     df = pd.DataFrame(
         {
@@ -183,7 +195,8 @@ def multisims(sims:int=sims, params:dict=params, env_stoch:bool=env_stoch):
             'metabolites': metabolites,
             'resources': Rs,
             'density': Ns,
-            "mean_density": mean_Ns
+            "mean_density": mean_Ns,
+            "coexistence": coexist
         }
     )
 
