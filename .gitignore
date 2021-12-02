@@ -1,5 +1,7 @@
 # personal
 CompuCell3D/screenshots*
+output/*
+jobfiles*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

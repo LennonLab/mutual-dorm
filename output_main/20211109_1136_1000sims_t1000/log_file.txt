@@ -1,0 +1,16 @@
+Description:
+env_stoch 4:1, no dorm, two cell type, fixed mutualism without cost
+
+Environmental Stochasticity:	True
+num_cells:	2
+N:	100
+A:	0
+B:	0
+C:	100
+responsive:	True
+dorm:	True
+trait:	0.1
+R:	None
+mt:	None
+g:	None
+size:	None
