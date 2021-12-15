@@ -4,7 +4,7 @@ Ford Fishman
 
 ## Motivation
 
-What is the interaction between dormancy and the establishment and maintaining of mutualisms in microbes? While crossfeeding might be strongly beneficial to two bacterial species, there are  costs associated with producing resources that are only indirectly useful. These costs may inhibit the generation of these mutualisms or perhaps lead to cheating, where some individuals receive the benefits of the mutualism without producing any costly resources themselves. 
+What is the interaction between dormancy and the establishment and maintaining of mutualisms in microbes? While crossfeeding might be strongly beneficial to two bacterial species, there are costs associated with producing resources that are only indirectly useful. These costs may inhibit the generation of these mutualisms or perhaps lead to cheating, where some individuals receive the benefits of the mutualism without producing any costly resources themselves. 
 
 Dormancy may help to stabilize these relationships. For instance, while the costs of mutualism may lead to a fitness disadvantage when a shared resource is abundant, it may be beneficial when there are low levels of the shared resource. A seed bank of dormant cells may allow mutualistic cells to persist when selection favors cheaters. Additionally, environmental stochasticity can lead to the fixation of one of the two partners drifting to extinction. A seed bank can drastically reduce the probability of stochastic fixation of mutualistic partners. 
 
@@ -38,6 +38,8 @@ The `Population()` class is defined in `Population.py`. It takes 5 arguments: `c
 
 The primary simulation action occurs in `main.py`. This script reads in parameters from the command line and contains many functions that initialize simulations with these parameters. Execution of the main script can occur in two modes: single simulation or multi-simulation mode, which takes advantage of parallel processing, and creates output in the form of plots and raw data files. Alternatively, `main.ipynb` can be used to run a single simulation and examine the output graphically. `run.sh` can also be used to quickly specify parameters for simulations and create output directories for plots and data.
 
+Importantly, environmental stochasticity can be enabled here by fluctuating the concentration of $R_C$. When enabled, in any given timestep, either 0 or 100 $R_C$ is added into the system. Extreme resource limitation is implemented by increasing the probability of 0 relative to 100 $R_C$. 
+
 ### Spatial IBM
 
 The spatial model was construced using the CompuCell3D platform, which has been previously used in biomedical research for explicitely modeling the complex behaviors of human body tissues. This platform allows 2D or 3D modeling of cells made up of several pixels that can grow, divide, interact with each other, and perform many biologically relevant behaviors. 
@@ -62,38 +64,57 @@ Responsive dormancy is implemented in this model in a similar manner to the non-
 
 ### Non-Spatial Model
 
-Each simulation was initialized with 100 total cells randomly set to be A or B cells. 100 units of $R_C$ are added each timestep. Simulations were run varying the strength of mutualism, as well as the mode of dormancy (stochastic, responsive, or no dormancy). The simulations were ran for 1000 timesteps each. 
+Each simulation was initialized with 100 total cells randomly set to be A or B cells. 100 units of $R_C$ are added each timestep. Simulations were run varying the strength of mutualism, as well as the mode of dormancy (stochastic, responsive, or no dormancy). Simulations were also run with and without environmental stochasticity. All simulations were ran for 1000 timesteps each. 
 
-Regardless of dormancy mode, when cells are initialized with mutualism enabled, both cell types stably coexist the majority of the time (Fig.1, 3). The combined densities of the two cell types grows agter an initial reaches a saturation point most often below 1000 total cells. Despite this, the concencentrations of $R_A$ and $R_B$ remain approximately 100-fold less than $R_C$. This small mutualistic interaction does appear enough to stabilize the pair such that the likelihood of fixation of either cell type is greatly decreased. 
+#### Stable conditions
 
-![densities plot](output/MD_plots/fig1.png)
+![fig1 plot](output/MD_plots/fig1.png)
 
-*Fig.1: Densities of A and B cells for the duration of a single simulation with mutualism and responsive dormancy enabled.*
+*Fig.1: Simulation showing coexistance of A and B strains with mutualism enabled (trait = 0.1) and no dormancy.*
 
-![densities histogram](output/MD_plots/fig2.png)
+![fig2 plot](output/MD_plots/fig2.png)
 
-*Fig.2: Total densities of A and B cells at the final timestep for 1000 simulations. Mutualism is enabled (trait=0.1), and dormancy is disabled.*
+*Fig.2: Simulation showing fixation of strain B with mutualism disabled and stochastic dormancy enabled.*
 
-![freq histogram](output/MD_plots/fig3.png)
+![fig3 plot](output/MD_plots/fig3.png)
 
-*Fig.3: Frequency of A cells at the final timestep for 1000 simulations. Mutualism is enabled (trait=0.1), and dormancy is disabled.*
+*Fig.3: Simulation showing coeistance of both strains with mutualism enabled (trait = 0.1) and stochastic dormancy enabled.*
+
+With a constant environment, mutualism can allow both strains to coexist with minimal fluctuations in density (Fig.1, Fig.3). Without dormancy, fixation of one of the strains is inevitable (Fig.2). As expected, without a fluctuating environment, dormancy matters very little for long-term coexistence. While full extinction of one of strains may take longer than without dormancy (Fig.2), the frequency of the dominant strain in the seedbank makes it much more likely that it will be resuscitated than the less frequent strain.
+
+#### Fluctuating conditions
+
+Simulations were run with 100 $R_C$ being added to the system with a probability of 6.25% per timestep. This models an environment under extreme resource limitation, where dormancy would provide value. Metabolite production does have a cost for the producer, however. 
+
+
+![dormancy plot](output/MD_plots/extinction.png)
+
+*Fig.4: Simulation of energy limitation showing short-term coexistence before extinction of both strains with mutualism (trait = 0.1) enabled and dormancy disabled.*
+
+Without dormancy, neither strain will survive very long. One of the two strains goes to fixation almost immediately. However, without consistent mechanism to maintain this one strain, it goes to extinction rapidly. When mutualism is enabled, because each strain promotes the other's survival, the probability that both strains can coexist temporarily increases, but again, since neither can survive the resource limitation, both go to extinction quickly.
+
+![dormancy plot](output/MD_plots/one_member.png)
+
+*Fig.5: Simulation of energy limitation showing fixation of one strain with mutualism disabled and stochastic dormancy enabled.*
+
+With the introduction of dormancy, long-term survival becomes possible for a single strain, as the seedbank allows resuscitations to occur when environmental conditions become more favorable. However, one strain still drifts to extinction. Even if the lower frequency strain makes up a part of the seedbank, there is no competitive advantage when rare, so genetic drift will determine its frequency.
+
+![coexistence plot](output/MD_plots/energy_limitation.png)
+
+*Fig.6: Simulation of energy limitation showing sustained coexistence with mutualism (trait = 0.1) and stochastic dormancy enabled.*
+
+With both dormancy and mutualism acting together, both strains can now coexist in the long-term. Because the dominant strain produces resources that only the less frequent strain can use, this less frequent strain has an advantage when rare. This advantage dissapates as the frequencies of the strains approach each other, as both strains are actively beneficial to each other. 
+
+
+### Trait evolution
 
 Within a simulation, the mutualistic trait can be allowed to evolve. This is achieved by initializing population with variation in this trait value. Consistently, the average trait value of these populations was approximately $0.5$ and steadily decreased over the course the simulation (Fig.4). As no cells are initialized with a trait value of exactly $0$, the average trait value must remain nonzero. The primary reason for the decrease in the individual-level cost of maintaining mutualism, as producing $R_A$ or $R_B$ uses up resources that could otherwise be converted into cell growth and lead to progeny. 
 
-![trait plot](output/MD_plots/fig4.png)
+![trait plot](output/MD_plots/trait.png)
 
-*Fig.4: Evolution of the average mutualistic trait value of a simulation where A becomes dominant.*
+*Fig.7: Evolution of the average mutualistic trait value of a simulation where A becomes dominant.*
 
 The cost of mutualism is the limiting factor in the total population density. When mutualism is disabled, final total population density can reach much higher levels (Fig.5). A similar result occurs when mutualism is enabled but with no associated cost (Fig.6). 
-
-![densities histogram 2](output/MD_plots/fig5.png)
-*Fig.5: Total densities of A and B cells at the final timestep for 1000 simulations where both mutualism and dormancy are turned off.*
-
-![densities plot 2](output/MD_plots/fig6.png)
-
-*Fig.6: Densities of A and B cells for the duration of a single simulation without a cost of mutualism.*
-
-Dormancy appears to have little effect on simulation outcome. However, this may be because there is insufficent environmental stochasticity in the program. While there is a setting in the model to allow for fluctuations in $R_C$ at any given timestep, perhaps more drastic fluctuations are necessary to see an effect. 
 
 
 ### Spatial Model
@@ -104,19 +125,24 @@ Once the cells cover the medium across the whole simulation plane and temporary 
 
 ![cell field gif](CompuCell3D/screenshots/MutualDorm_cc3d_08_30_2021_17_26_37/cellfield.gif)
 
-*Fig.7: CompuCell3D animation of the spatial model showing dynamics over 1000 timesteps of A (blue) and B (green) cells, as well as dormant A (red) and B (yellow) cells, on a 2-dimensional plane. Black edges are present to distinguish between cells.*
+*Fig.8: CompuCell3D animation of the spatial model showing dynamics over 1000 timesteps of A (blue) and B (green) cells, as well as dormant A (red) and B (yellow) cells, on a 2-dimensional plane. Black edges are present to distinguish between cells.*
 
 Let the densities of A and B cells be $N_A$ and $N_B$. These population densities oscillate over time between $1000$ and $2000$ individuals such that the densities of both cell types are out of phase (Fig.8). When $N_A$ increases, $N_B$ in turn decreases, and the reciprocal also is true. This same pattern is apparent with the dormant populations of A and B ($D_A$ and $D_B$), though the dormant populations are much higher, generally oscillating between $3000$ and $4000$ individuals. 
 
 ![cell densities plot](CompuCell3D/screenshots/MutualDorm_cc3d_08_30_2021_17_26_37/celldensities.png)
 
-*Fig.8: Densities of all cell types of the animated simulation above. The colors of the curves match the colors of the cells.*
+*Fig.9: Densities of all cell types of the animated simulation above. The colors of the curves match the colors of the cells.*
 
 ## Future Directions
 
 ### Non-spatial model
 
-In its present form, this non-spatial model contains several unanticipated behaviors. Namely, dormancy should have some effect on the model's behavior. While environmental stochasticity is implemented, it does not change simulation dynamics in an appreciable manner. More testing will be necessary to incorporate this vital feature of the model. Additionally, parameter tuning will be necessary to find a reasonable cost of mutualism to find realistic values that allow for stable mutualisms to form. Discovering if dormancy can alter how feasible mutualism is with varying costs will be essential moving forward. 
+While stochastic dormancy is working as intended, the current parameters for responsive dormancy make the individuals too sensitive to resource concentrations. This function currently takes the form of $p_r=\frac{1}{1+R}$, where $p_r$ is the probability of resuscitation. This should be generalized to $p_r=\frac{\alpha}{\beta+R}$, and an array of values for both $\alpha$ and $\beta$ should be tested to optimize performance. A similar generalization could occur 
+
+Evolution of the mutualistic trait value was briefly explored here, but more thorough tests of evolution of the trait with and without dormancy, as well as with and without environmental stochasticity, are necessary. This can be accomplished through job submissions for parameter sweeps. Additional sweeps can be used to explore where different parameters (cost of mutualism, degree of environmental stochasticity, population size, inflow of resources) lead to different outcomes: partner coexistence, maintenance of mutualism, and/or dominance of cheating.
+
+Finally, this model is fairly abstract, and many changes could be made to resemble the lab's set of Bacillus auxotrophs more closely. Such decisions include the following: making dormancy and cell division mutually exclusive so that dormancy cannot occur directly after division; changing the resource model to more closely resemble the Kost auxotroph setup; more specific and realistic source of environmental disturbances besides explicit resources, such as desication; and randomization of the order of the internal cell processes. Additionally, the model could made more flexible to allow for only one partner to have dormancy. 
+
 
 ### Spatial model
 
