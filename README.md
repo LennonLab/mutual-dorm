@@ -68,15 +68,15 @@ Each simulation was initialized with 100 total cells randomly set to be A or B c
 
 #### Stable conditions
 
-![fig1 plot](output/MD_plots/fig1.png)
+![fig1 plot](output_main/MD_plots/fig1.png)
 
 *Fig.1: Simulation showing coexistance of A and B strains with mutualism enabled (trait = 0.1) and no dormancy.*
 
-![fig2 plot](output/MD_plots/fig2.png)
+![fig2 plot](output_main/MD_plots/fig2.png)
 
 *Fig.2: Simulation showing fixation of strain B with mutualism disabled and stochastic dormancy enabled.*
 
-![fig3 plot](output/MD_plots/fig3.png)
+![fig3 plot](output_main/MD_plots/fig3.png)
 
 *Fig.3: Simulation showing coeistance of both strains with mutualism enabled (trait = 0.1) and stochastic dormancy enabled.*
 
@@ -87,19 +87,19 @@ With a constant environment, mutualism can allow both strains to coexist with mi
 Simulations were run with 100 $R_C$ being added to the system with a probability of 6.25% per timestep. This models an environment under extreme resource limitation, where dormancy would provide value. Metabolite production does have a cost for the producer, however. 
 
 
-![dormancy plot](output/MD_plots/extinction.png)
+![dormancy plot](output_main/MD_plots/extinction.png)
 
 *Fig.4: Simulation of energy limitation showing short-term coexistence before extinction of both strains with mutualism (trait = 0.1) enabled and dormancy disabled.*
 
 Without dormancy, neither strain will survive very long. One of the two strains goes to fixation almost immediately. However, without consistent mechanism to maintain this one strain, it goes to extinction rapidly. When mutualism is enabled, because each strain promotes the other's survival, the probability that both strains can coexist temporarily increases, but again, since neither can survive the resource limitation, both go to extinction quickly.
 
-![dormancy plot](output/MD_plots/one_member.png)
+![dormancy plot](output_main/MD_plots/one_member.png)
 
 *Fig.5: Simulation of energy limitation showing fixation of one strain with mutualism disabled and stochastic dormancy enabled.*
 
 With the introduction of dormancy, long-term survival becomes possible for a single strain, as the seedbank allows resuscitations to occur when environmental conditions become more favorable. However, one strain still drifts to extinction. Even if the lower frequency strain makes up a part of the seedbank, there is no competitive advantage when rare, so genetic drift will determine its frequency.
 
-![coexistence plot](output/MD_plots/energy_limitation.png)
+![coexistence plot](output_main/MD_plots/energy_limitation.png)
 
 *Fig.6: Simulation of energy limitation showing sustained coexistence with mutualism (trait = 0.1) and stochastic dormancy enabled.*
 
@@ -110,7 +110,7 @@ With both dormancy and mutualism acting together, both strains can now coexist i
 
 Within a simulation, the mutualistic trait can be allowed to evolve. This is achieved by initializing population with variation in this trait value. Consistently, the average trait value of these populations was approximately $0.5$ and steadily decreased over the course the simulation (Fig.4). As no cells are initialized with a trait value of exactly $0$, the average trait value must remain nonzero. The primary reason for the decrease in the individual-level cost of maintaining mutualism, as producing $R_A$ or $R_B$ uses up resources that could otherwise be converted into cell growth and lead to progeny. 
 
-![trait plot](output/MD_plots/trait.png)
+![trait plot](output_main/MD_plots/trait.png)
 
 *Fig.7: Evolution of the average mutualistic trait value of a simulation where A becomes dominant.*
 
