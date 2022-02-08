@@ -16,11 +16,11 @@ To address these questions, we have developed two individual-based models (IBMs)
 
 This object-oriented model adapts code from https://acerbialberto.com/IBM-cultevo/, as well as https://github.com/LennonLab/residence-time into a Python-based IBM to study a well-mixed mutualistic system. This model contains several Python scripts, primarily `Cell.py`, `Population.py`, and `main.py`. This repository also contains the bash script `run.sh`.
 
-In the simulations presented here, cells can be type A or B. Both types utilize resource C ($R_C$). Cells have properties, such as size and internal resource density, and exist in a population. A cells produce metabolite A ($R_A$), and B cells produce metabolite B ($R_B$). This production occurs according the mutualistic trait value of each individual cell. Cells also can become dormant (stochastically or based on the concentration of resources available) and resuscitate stochastically. 
+In the simulations presented here, cells can be type A or B. Both types utilize resource C ($R_C$). Cells have properties, such as size and internal resource density, and exist in a population. A cells produce metabolite A ($R_A$), and B cells produce metabolite B ($R_B$). This production occurs according to the mutualistic trait value of each individual cell. Cells also can become dormant (stochastically or based on the concentration of resources available) and resuscitate stochastically. 
 
 #### Cell
 
-`Cell.py` contains the `Cell()` class, which when instantiated is representative of an individual bacterium. Several optional arguments can be passed into the class constructor to specify certain properties, namely cell type (`ty`), mutualistic trait value (`trait`), internal resource concentration (`R`), cost of maintenence (`mt`), cost of cell growth (`g`), and initial cell size (`size`). If any of these are left unspecified, they are randomly initialized such that cell type is either A or B (`Cell.init_ty()`) and all numerical parameters are taken from a uniform distribution on the interval $[0, 1]$ (`Cell.init_traits()`).
+`Cell.py` contains the `Cell()` class, which when instantiated is representative of an individual bacterium. Several optional arguments can be passed into the class constructor to specify certain properties, namely cell type (`ty`), mutualistic trait value (`trait`), internal resource concentration (`R`), cost of maintenance (`mt`), cost of cell growth (`g`), and initial cell size (`size`). If any of these are left unspecified, they are randomly initialized such that cell type is either A or B (`Cell.init_ty()`) and all numerical parameters are taken from a uniform distribution on the interval $[0, 1]$ (`Cell.init_traits()`).
 
 The `Cell()` class also contains functions that can change its attributes. `Cell.depleted()` checks if the cell has any remaining resources. `Cell.maintenance()` reduces `Cell.R` to simulate the cost of upkeep. `Cell.growth()` uses `Cell.R` to increase cell size according to growth constant `Cell.g`. `Cell.division()` determines whether the cell will or will not divide based upon `Cell.R` and cell size. The probability of divided is calculated as:
 
@@ -42,7 +42,7 @@ Importantly, environmental stochasticity can be enabled here by fluctuating the 
 
 ### Spatial IBM
 
-The spatial model was construced using the CompuCell3D platform, which has been previously used in biomedical research for explicitely modeling the complex behaviors of human body tissues. This platform allows 2D or 3D modeling of cells made up of several pixels that can grow, divide, interact with each other, and perform many biologically relevant behaviors. 
+The spatial model was constructed using the CompuCell3D platform, which has been previously used in biomedical research for explicitly modeling the complex behaviors of human body tissues. This platform allows 2D or 3D modeling of cells made up of several pixels that can grow, divide, interact with each other, and perform many biologically relevant behaviors. 
 
 Like the non-spatial model described above, cells of type A and B are generated with certain properties, including volume, resource concentration, and also coordinate locations in a 2D environment. Cells of type A produce $R_A$, and cells of type B produce $R_B$, as in the non-spatial model. 
 
@@ -64,13 +64,13 @@ Responsive dormancy is implemented in this model in a similar manner to the non-
 
 ### Non-Spatial Model
 
-Each simulation was initialized with 100 total cells randomly set to be A or B cells. 100 units of $R_C$ are added each timestep. Simulations were run varying the strength of mutualism, as well as the mode of dormancy (stochastic, responsive, or no dormancy). Simulations were also run with and without environmental stochasticity. All simulations were ran for 1000 timesteps each. 
+Each simulation was initialized with 100 total cells randomly set to be A or B cells. 100 units of $R_C$ are added each timestep. Simulations were run varying the strength of mutualism, as well as the mode of dormancy (stochastic, responsive, or no dormancy). Simulations were also run with and without environmental stochasticity. All simulations were run for 1000 timesteps each. 
 
 #### Stable conditions
 
 ![fig1 plot](output_main/MD_plots/fig1.png)
 
-*Fig.1: Simulation showing coexistance of A and B strains with mutualism enabled (trait = 0.1) and no dormancy.*
+*Fig.1: Simulation showing coexistence of A and B strains with mutualism enabled (trait = 0.1) and no dormancy.*
 
 ![fig2 plot](output_main/MD_plots/fig2.png)
 
@@ -78,7 +78,7 @@ Each simulation was initialized with 100 total cells randomly set to be A or B c
 
 ![fig3 plot](output_main/MD_plots/fig3.png)
 
-*Fig.3: Simulation showing coeistance of both strains with mutualism enabled (trait = 0.1) and stochastic dormancy enabled.*
+*Fig.3: Simulation showing coexistance of both strains with mutualism enabled (trait = 0.1) and stochastic dormancy enabled.*
 
 With a constant environment, mutualism can allow both strains to coexist with minimal fluctuations in density (Fig.1, Fig.3). Without dormancy, fixation of one of the strains is inevitable (Fig.2). As expected, without a fluctuating environment, dormancy matters very little for long-term coexistence. While full extinction of one of strains may take longer than without dormancy (Fig.2), the frequency of the dominant strain in the seedbank makes it much more likely that it will be resuscitated than the less frequent strain.
 
@@ -103,7 +103,7 @@ With the introduction of dormancy, long-term survival becomes possible for a sin
 
 *Fig.6: Simulation of energy limitation showing sustained coexistence with mutualism (trait = 0.1) and stochastic dormancy enabled.*
 
-With both dormancy and mutualism acting together, both strains can now coexist in the long-term. Because the dominant strain produces resources that only the less frequent strain can use, this less frequent strain has an advantage when rare. This advantage dissapates as the frequencies of the strains approach each other, as both strains are actively beneficial to each other. 
+With both dormancy and mutualism acting together, both strains can now coexist in the long-term. Because the dominant strain produces resources that only the less frequent strain can use, this less frequent strain has an advantage when rare. This advantage dissipates as the frequencies of the strains approach each other, as both strains are actively beneficial to each other. 
 
 
 ### Trait evolution
@@ -141,7 +141,7 @@ While stochastic dormancy is working as intended, the current parameters for res
 
 Evolution of the mutualistic trait value was briefly explored here, but more thorough tests of evolution of the trait with and without dormancy, as well as with and without environmental stochasticity, are necessary. This can be accomplished through job submissions for parameter sweeps. Additional sweeps can be used to explore where different parameters (cost of mutualism, degree of environmental stochasticity, population size, inflow of resources) lead to different outcomes: partner coexistence, maintenance of mutualism, and/or dominance of cheating.
 
-Finally, this model is fairly abstract, and many changes could be made to resemble the lab's set of Bacillus auxotrophs more closely. Such decisions include the following: making dormancy and cell division mutually exclusive so that dormancy cannot occur directly after division; changing the resource model to more closely resemble the Kost auxotroph setup; more specific and realistic source of environmental disturbances besides explicit resources, such as desication; and randomization of the order of the internal cell processes. Additionally, the model could made more flexible to allow for only one partner to have dormancy. 
+Finally, this model is fairly abstract, and many changes could be made to resemble the lab's set of Bacillus auxotrophs more closely. Such decisions include the following: making dormancy and cell division mutually exclusive so that dormancy cannot occur directly after division; changing the resource model to more closely resemble the Kost auxotroph setup; more specific and realistic source of environmental disturbances besides explicit resources, such as desiccation; and randomization of the order of the internal cell processes. Additionally, the model could be made more flexible to allow for only one partner to have dormancy. 
 
 
 ### Spatial model
