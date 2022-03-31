@@ -108,7 +108,7 @@ With both dormancy and mutualism acting together, both strains can now coexist i
 
 ### Trait evolution
 
-Within a simulation, the mutualistic trait can be allowed to evolve. This is achieved by initializing population with variation in this trait value. Consistently, the average trait value of these populations was approximately $0.5$ and steadily decreased over the course the simulation (Fig.4). As no cells are initialized with a trait value of exactly $0$, the average trait value must remain nonzero. The primary reason for the decrease in the individual-level cost of maintaining mutualism, as producing $R_A$ or $R_B$ uses up resources that could otherwise be converted into cell growth and lead to progeny. 
+Within a simulation, the mutualistic trait can be allowed to evolve. This is achieved by initializing population with variation in this trait value. Consistently, the average trait value of these populations was approximately $0.5$ and steadily decreased over the course the simulation (Fig.4). As no cells are initialized with a trait value of exactly $0$, the average trait value must remain nonzero. The primary reason for the decrease is the individual-level cost of maintaining mutualism, as producing $R_A$ or $R_B$ uses up resources that could otherwise be converted into cell growth and lead to progeny. 
 
 ![trait plot](output_main/MD_plots/trait.png)
 
@@ -137,7 +137,7 @@ Let the densities of A and B cells be $N_A$ and $N_B$. These population densitie
 
 ### Non-spatial model
 
-While stochastic dormancy is working as intended, the current parameters for responsive dormancy make the individuals too sensitive to resource concentrations. This function currently takes the form of $p_r=\frac{1}{1+R}$, where $p_r$ is the probability of resuscitation. This should be generalized to $p_r=\frac{\alpha}{\beta+R}$, and an array of values for both $\alpha$ and $\beta$ should be tested to optimize performance. A similar generalization could occur 
+While stochastic dormancy is working as intended, the current parameters for responsive dormancy make the individuals too sensitive to resource concentrations. This function currently takes the form of $p_r=\frac{1}{1+R}$, where $p_r$ is the probability of resuscitation. This should be generalized to $p_r=\frac{\alpha}{\beta+R}$, and an array of values for both $\alpha$ and $\beta$ should be tested to optimize performance. A similar generalization could be implemented for calculated the probability of dormancy.
 
 Evolution of the mutualistic trait value was briefly explored here, but more thorough tests of evolution of the trait with and without dormancy, as well as with and without environmental stochasticity, are necessary. This can be accomplished through job submissions for parameter sweeps. Additional sweeps can be used to explore where different parameters (cost of mutualism, degree of environmental stochasticity, population size, inflow of resources) lead to different outcomes: partner coexistence, maintenance of mutualism, and/or dominance of cheating.
 
