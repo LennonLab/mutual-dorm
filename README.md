@@ -129,7 +129,7 @@ Once the cells cover the medium across the whole simulation plane and temporary 
 
 Let the densities of A and B cells be $N_A$ and $N_B$. These population densities oscillate over time between $1000$ and $2000$ individuals such that the densities of both cell types are out of phase (Fig.8). When $N_A$ increases, $N_B$ in turn decreases, and the reciprocal also is true. This same pattern is apparent with the dormant populations of A and B ($D_A$ and $D_B$), though the dormant populations are much higher, generally oscillating between $3000$ and $4000$ individuals. 
 
-![cell densities plot](CompuCell3D/screenshots/MutualDorm_cc3d_08_30_2021_17_26_37/celldensities.png)
+![cell densities plot](output_main/MD_plots/celldensities2.png)
 
 *Fig.9: Densities of all cell types of the animated simulation above. The colors of the curves match the colors of the cells.*
 
