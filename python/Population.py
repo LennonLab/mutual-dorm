@@ -20,6 +20,7 @@ class Population():
         self.resources = resources 
         self.responsive = responsive
         self.hasdorm = dorm
+        self.new_active = list()
 
     def timestep(self) -> None:
         """
@@ -28,17 +29,23 @@ class Population():
 
         # 1 resuscitate
         resc = self.resc()
-        cells = np.array(self.cells + resc) # bank of cells comes prev timestep and current resuscitated cells
 
-        if len(cells) < 1: # if there are no active cells
+        self.new_active = resc
+        # if len(resc)>0:
+        #     print(resc[0].R)
+
+        cells = np.array(self.cells + resc) # bank of cells comes prev timestep and current resuscitated cells
+    
+        N = len(cells)
+
+        if N < 1: # if there are no active cells  
             return None
 
         # 2 internal cell processes
 
-        m = 1 # about of resource to uptake
+        m = 1 # amount of resource to uptake
 
-
-        order = np.random.choice(range(self.N), size=self.N) # randomize order of cells
+        order = np.random.choice(range(N), size=N) # randomize order of cells
 
         for i in order:
 
@@ -61,6 +68,10 @@ class Population():
 
                     cell.R += m
                     self.resources[r] -= m
+            
+            if self.responsive: # update dormancy probabilities
+
+                cell.dorm()
 
             cell.depleted()
                   
@@ -72,19 +83,24 @@ class Population():
         notDepleted = np.array([not cell.isDepleted for cell in cells])
         cells = cells[notDepleted]
 
-        if len(cells) < 1: # second check for active cells
-            return None
+        daughters = []
 
-        isDividing = np.array([cell.isDividing for cell in cells])
-        daughters = [self.daughterCell(cell) for cell in cells[isDividing]]
+        if len(cells) > 0: # second check for active cells            
 
-        next_gen = list(cells) + daughters
+            isDividing = np.array([cell.isDividing for cell in cells])
+            daughters = [self.daughterCell(cell) for cell in cells[isDividing]]
+
+            next_gen = list(cells) + daughters
+            self.update(next_gen)
+      
+            # 4 dormancy
+            dorm = self.dorm()
+            self.dormant += dorm # add cells to dormancy list
         
-        # 4 dormancy
-        dorm = self.dorm()
-        self.dormant += dorm # add cells to dormancy list
-        self.update(next_gen)
+        else: # if there are no active cells
         
+            next_gen = list(cells) + daughters
+            self.update(next_gen)
 
         for resource, R in self.resources.items():
             if R <= 0:
@@ -96,7 +112,7 @@ class Population():
         """
         Returns frequency of given allele (ty) in pop  
         """
-        return self.types.count(ty)/len(self.cells)
+        return self.types.count(ty) / max( len(self.cells), 1 )
     
     def density(self, ty) -> int:
         """
@@ -165,7 +181,7 @@ class Population():
         Select cells to enter dormancy
         """
         cells = self.cells
-
+        
         if not self.hasdorm:
             dormant = []
     
@@ -183,7 +199,9 @@ class Population():
             dormant = np.random.choice(cells, size=D, replace=False) # pick which cells go dormant
 
         for cell in dormant: # remove dormant cells from active population
-            self.cells.remove(cell)
+            cells.remove(cell)
+        
+        self.update(cells)
 
         return list(dormant)
     

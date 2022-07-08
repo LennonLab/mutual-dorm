@@ -5,8 +5,9 @@ source activate ibm
 # parameters
 sims=1000
 t=1000
-tr=0.1
+tr=0.0
 C=1
+des="env_stoch 4:1, stoch dorm, one cell type"
 
 # setup output directory
 dt=$(date "+%Y%m%d_%H%M")
@@ -24,5 +25,5 @@ mkdir $output
 touch $log
 
 # run sim
-time python $python/main.py -S $sims -t $t -o $output/ -R -tr $tr -C $C > $log
+time python $python/main.py -S $sims -t $t -o $output/ -tr $tr -C $C -R -es -des "$des" > $log
 

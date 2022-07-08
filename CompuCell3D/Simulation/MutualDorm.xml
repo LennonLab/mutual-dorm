@@ -153,7 +153,7 @@
             <!-- Additional options are: -->
             <!-- <InitialConcentrationExpression>x*y</InitialConcentrationExpression> -->
             <!-- <ConcentrationFileName>INITIAL CONCENTRATION FIELD - typically a file with path Simulation/NAME_OF_THE_FILE.txt</ConcentrationFileName> -->
-         </DiffusionData>
+         </DiffusionData>    
          <SecretionData>
             <!-- When secretion is defined inside DissufionSolverFE all secretion constants are scaled automaticaly to account for the extra calls to the diffusion step when handling large diffusion constants -->
             

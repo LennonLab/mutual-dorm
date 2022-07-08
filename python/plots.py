@@ -55,3 +55,17 @@ def N_m(path, N):
     plt.savefig(path)   
 
     return None
+
+def mean_N_m(path, mean_N):
+    """
+    plot the mean densities across all timesteps, 
+    not just the density at the final timestep
+    """
+
+    figs, axs = plt.subplots(figsize=(8,4), dpi=80)
+    axs.hist(mean_N, bins=30)
+    axs.set_xlabel('Total population density')
+
+    plt.savefig(path)      
+
+    return None

@@ -9,7 +9,6 @@ class ConstraintInitializerSteppable(SteppableBasePy):
     def start(self):
         
         self.track_cell_level_scalar_attribute(field_name='conc', attribute_name='conc')
-        
 
         for cell in self.cell_list:
 
